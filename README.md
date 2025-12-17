@@ -1,4 +1,5 @@
 Phishing Unfolding: Real-Time Incident Response Lab
+
 This repository documents a high-pressure, live phishing attack scenario where I acted as a SOC Analyst to identify, analyze, and document each phase of a corporate breach as it unfolded.
 
 
