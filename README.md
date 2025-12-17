@@ -42,5 +42,3 @@ Based on the analysis, the following immediate actions were recommended:
 3.  **Preserve:** Capture all DNS logs as they contain the forensic fragments of the exfiltrated data.
 4.  **Reset:** Forced credential reset for the compromised user `michael.ascot`.
 
----
-*Developed as part of my Cybersecurity specialization. For more information, contact me at mhumdanwerdw@gmail.com.*
