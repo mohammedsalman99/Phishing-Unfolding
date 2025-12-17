@@ -1,78 +1,46 @@
-Phishing Unfolding: Real-Time Incident Response Lab
+# Phishing Unfolding: Real-Time Incident Response Lab 🛡️
 
-This repository documents a high-pressure, live phishing attack scenario where I acted as a SOC Analyst to identify, analyze, and document each phase of a corporate breach as it unfolded.
-
-
-🎯 Scenario Overview
-The project involves monitoring real-time SIEM alerts within a corporate network to piece together an attack chain. The goal was to differentiate between benign system noise and malicious activities like PowerShell executions, reverse shells, and data exfiltration.
+A comprehensive documentation of a high-pressure, live phishing attack simulation. This project demonstrates the ability to monitor SIEM alerts, analyze malicious process trees, and detect advanced exfiltration techniques like DNS tunneling.
 
 
 
+## 📋 Scenario Overview
+In this simulation, I acted as a **SOC Analyst** tasked with defending a corporate network. The project involved distinguishing between benign system noise and actual malicious indicators (IoCs) to reconstruct a full attack chain.
 
-🛡️ Incident Timeline & Analysis
-Phase 1: Initial Access (Phishing)
+## ☣️ The Attack Chain (Kill Chain)
 
-Alert ID 1000: A suspicious email was received from an external domain (eileen@trendymillineryco.me) using an unusual TLD (.me).
+### 1. Delivery & Initial Access
+* **Vector:** Phishing email from `eileen@trendymillineryco.me` (Suspicious TLD).
+* **Payload:** A malicious ZIP file `ImportantInvoice-Febrary.zip` containing a script that initiated a reverse shell.
+* **Victim:** `michael.ascot@tryhackme.com` on workstation `win-3450`.
 
+### 2. Execution & Persistence
+* **Malicious Process:** `powershell.exe` (PID 3728) was spawned immediately after the user opened the attachment.
+* **Tooling:** The attacker downloaded and executed **PowerView.ps1**, a common tool for Active Directory enumeration and discovery.
 
+### 3. Lateral Movement & Data Staging
+* **Share Discovery:** Use of `net.exe` to map a sensitive financial directory: `\\FILESRV-01\SSF-FinancialRecords`.
+* **Staging:** The attacker used `Robocopy.exe` to move targeted financial workbooks into a local hidden directory: `C:\Users\michael.ascot\downloads\exfiltration\`.
 
-
-Analysis: Classified as a True Positive due to known phishing patterns (advance-fee scam) and requests for banking details.
-
-
-
-
-Alert ID 1005: A more dangerous email was received containing a malicious attachment: ImportantInvoice-Febrary.zip.
-
-
-Phase 2: Post-Exploitation & Reconnaissance
-
-PowerShell Execution: 22 minutes after the malicious ZIP arrived, the user (michael.ascot) executed the payload, which dropped PowerView.ps1 into the Downloads folder.
-
-
-Reconnaissance: The attacker used a persistent PowerShell process (PID 3728) to perform Active Directory reconnaissance and domain enumeration.
-
+### 4. Data Exfiltration (DNS Tunneling)
+* **Method:** The attacker utilized `nslookup.exe` to bypass traditional firewalls.
+* **Detection:** Identified high-frequency DNS queries to `haz4rdw4re.io`. 
+* **Base64 Analysis:** Decoded the subdomains in the DNS queries, which revealed the actual content of stolen files (e.g., `Summary.xlsx`).
 
 
 
-Phase 3: Lateral Movement & Data Staging
+## 🛠️ Skills & Tools Demonstrated
+* **SIEM Analysis:** Triaging alerts and identifying **True Positives** vs. **False Positives** (e.g., dismissing `TrustedInstaller.exe` noise).
+* **Process Tree Investigation:** Analyzing parent-child process relationships to find the root cause of an infection.
+* **Threat Hunting:** Detecting unauthorized administrative tools used for malicious purposes.
+* **Incident Reporting:** Creating actionable intelligence for management and technical teams.
 
-Drive Mapping: The attacker used net.exe to silently map a sensitive financial share (\FILESRV-01\SSF-FinancialRecords) to the Z: drive.
+## 🚀 Remediation Strategy
+Based on the analysis, the following immediate actions were recommended:
+1.  **Isolate:** Disconnect workstation `win-3450` from the network to stop the reverse shell.
+2.  **Block:** Enterprise-wide sinkholing of the C2 domain `haz4rdw4re.io`.
+3.  **Preserve:** Capture all DNS logs as they contain the forensic fragments of the exfiltrated data.
+4.  **Reset:** Forced credential reset for the compromised user `michael.ascot`.
 
-
-Data Staging: Robocopy.exe was used to recursively copy all financial records into a local exfiltration folder: C:\Users\michael.ascot\downloads\exfiltration.
-
-Phase 4: Exfiltration via DNS Tunneling
-
-Mechanism: The attacker utilized nslookup.exe to leak data chunk-by-chunk.
-
-
-Indicators: Base64-encoded strings representing actual file headers (e.g., Summary.xlsx) were observed in DNS queries to the malicious domain haz4rdw4re.io.
-
-
-🛠️ Skills & Tools Demonstrated
-
-Log Analysis: Investigating Sysmon and SIEM alerts to trace parent-child process relationships.
-
-
-Threat Hunting: Identifying offensive tools like PowerView and unauthorized use of administrative tools like Robocopy.
-
-
-
-Traffic Analysis: Recognizing DNS tunneling and C2 beaconing patterns.
-
-
-
-Incident Reporting: Drafting comprehensive remediation actions, including network isolation and enterprise-wide domain blocking.
-
-
-
-📋 Key Lessons: Filtering "Normal Noise"
-A critical part of this lab was identifying False Positives to avoid "alert fatigue," such as:
-
-
-Alert ID 1001: TrustedInstaller.exe launched by services.exe (Normal Windows Update behavior).
-
-
-
-Alert ID 1006: rdpclip.exe launched by svchost.exe (Normal Remote Desktop session behavior).
+---
+*Developed as part of my Cybersecurity specialization. For more information, contact me at mhumdanwerdw@gmail.com.*
